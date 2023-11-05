@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfNet.Core", "PdfNet.Core\PdfNet.Core.csproj", "{962B7F89-89E0-4E0E-97E3-0CC2646B2779}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VL.PDF", "VL.PDF\VL.PDF.csproj", "{83DF0068-F549-4933-BDE2-B78C6E0EF814}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83DF0068-F549-4933-BDE2-B78C6E0EF814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83DF0068-F549-4933-BDE2-B78C6E0EF814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83DF0068-F549-4933-BDE2-B78C6E0EF814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83DF0068-F549-4933-BDE2-B78C6E0EF814}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
