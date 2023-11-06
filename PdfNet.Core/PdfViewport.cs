@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Drawing;
-using System.Numerics;
 
 namespace PdfNet.Core
 {
-    public abstract class PdfViewport<T>
+    public abstract class PdfViewport
     {
-        protected Vector2 _size;
-        protected Vector2 _position;
         protected IntPtr DataPointer;
 
         private byte[] _data;
@@ -35,42 +32,42 @@ namespace PdfNet.Core
             }
         }
 
-        public Vector2 Position
+        /// <summary>
+        /// Position of the top left corner of the viewport rectangle in screen space.
+        /// </summary>
+        public Vector2Int Position
         {
-            get => _position;
+            get => new Vector2Int(_rectangle.X, _rectangle.Y);
             set
             {
-                _position = value;
-                _rectangle.X = _position.X;
-                _rectangle.Y = _position.Y;
+                _rectangle.X = value.X;
+                _rectangle.Y = value.Y;
             }
         }
     
-        public Vector2 Size
+        /// <summary>
+        /// Size of the viewport rectangle in pixels.
+        /// </summary>
+        public Vector2Int Size
         {
-            get => _size;
+            get => new Vector2Int(_rectangle.Width, _rectangle.Height);
             set
             {
-                _size = value;
-                UpdateImageSize(_size);
-                Data = new byte[(int)_size.X * (int)_size.Y * PdfConstants.BytesPerPixel];
-                _rectangle.Width = _size.X;
-                _rectangle.Height = _size.Y;
+                _rectangle.Width = value.X;
+                _rectangle.Height = value.Y;
+                UpdateImageSize();
+                Data = new byte[_rectangle.Width * _rectangle.Height * PdfConstants.BytesPerPixel];
             }
         }
 
-        protected abstract void UpdateImageSize(Vector2 size);
+        protected abstract void UpdateImageSize();
         
-        public abstract T Image { get; }
-    
-        private RectangleF _rectangle;
-        public RectangleF Rectangle => _rectangle;
-    
-        public PdfViewport(Vector2 size)
+        private Rectangle _rectangle;
+        public Rectangle Rectangle => _rectangle;
+        
+        public PdfViewport(Vector2Int size)
         {
-            _rectangle = new RectangleF(0, 0, size.X, size.Y);
-            Size = size;
-        
+            _rectangle = new Rectangle(0, 0, size.X, size.Y);
         }
     }
 }
