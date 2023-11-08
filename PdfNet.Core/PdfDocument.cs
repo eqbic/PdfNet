@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PDFiumCore;
+using PdfNet.Unsafe;
 
 namespace PdfNet.Core
 {
-    public class PdfDocument
+    public class PdfDocument : IDisposable
     {
-        private readonly FpdfDocumentT _document;
+        private FpdfDocumentT _document;
         private Dictionary<int, PdfPage> _pages;
-
+        private List<PdfPage> _visiblePages = new List<PdfPage>();
         public PdfPage GetPage(int pageNumber) => _pages[pageNumber];
 
         public int PageCount { get; private set; }
@@ -29,21 +31,7 @@ namespace PdfNet.Core
 
         private FpdfDocumentT LoadFromData(byte[] data, string password = "")
         {
-            try
-            {
-                unsafe
-                {
-                    fixed (byte* pointer = data)
-                    {
-                        IntPtr ptr = (IntPtr)pointer;
-                        return fpdfview.FPDF_LoadMemDocument(ptr, data.Length, password);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
+            return UnsafeUtils.LoadRaw(data, password);
         }
 
         private void SetupDocument()
@@ -53,24 +41,26 @@ namespace PdfNet.Core
             CachePages(_document);
         }
 
-        public void Render(PdfViewport viewport)
+        private List<PdfPage> GetPagesInViewport(PdfViewport viewport)
         {
-            // each page has same size as first one
-            _pages[0].UpdatePageSize(viewport);
-            var firstPageSize = _pages[0].Rectangle.Height;
-        
-            var startPageNumber = viewport.Position.Y / firstPageSize;
-            var endPageNumber = (viewport.Position.Y + viewport.Size.Y) / firstPageSize;
+            return _pages.Values.Where(page => page.Bottom > viewport.Top || page.Top < viewport.Bottom).ToList();
+        }
 
-            var startPage = GetPage(startPageNumber);
-            var endPage = GetPage(endPageNumber);
-        
-            startPage.UpdatePageSize(viewport);
-            startPage.Render(viewport);
-            if (startPageNumber != endPageNumber)
+        public void UpdatePageSizes(PdfViewport viewport)
+        {
+            var visiblePages = GetPagesInViewport(viewport);
+            foreach (var page in visiblePages)
             {
-                endPage.UpdatePageSize(viewport);
-                endPage.Render(viewport);
+                page.UpdatePageSize(viewport);
+            }
+        }
+
+        public void Render(PdfViewport viewport, PdfTexture texture)
+        {
+            var visiblePages = GetPagesInViewport(viewport);
+            foreach (var page in visiblePages)
+            {
+                page.Render(viewport, texture);
             }
         }
 
@@ -81,6 +71,17 @@ namespace PdfNet.Core
                 var page = new PdfPage(fpdfview.FPDF_LoadPage(document, i), i);
                 _pages[i] = page;
             }
+        }
+
+        public void Dispose()
+        {
+            foreach (var page in _pages.Values)
+            {
+                page.Dispose();
+            }
+            _pages.Clear();
+            
+            fpdfview.FPDF_CloseDocument(_document);
         }
     }
 }

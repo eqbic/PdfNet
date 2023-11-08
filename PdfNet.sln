@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfNet.Core", "PdfNet.Core\PdfNet.Core.csproj", "{962B7F89-89E0-4E0E-97E3-0CC2646B2779}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfNet.Unsafe", "PdfNet.Unsafe\PdfNet.Unsafe.csproj", "{ACCFED0F-E0C0-4139-8D84-87560F96F1A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{962B7F89-89E0-4E0E-97E3-0CC2646B2779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACCFED0F-E0C0-4139-8D84-87560F96F1A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCFED0F-E0C0-4139-8D84-87560F96F1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCFED0F-E0C0-4139-8D84-87560F96F1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCFED0F-E0C0-4139-8D84-87560F96F1A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

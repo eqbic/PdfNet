@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using PDFiumCore;
+using PdfNet.Unsafe;
 
 namespace PdfNet.Core
 {
-    public class PdfPage
+    public class PdfPage : IDisposable
     {
         public FpdfPageT Page { get; }
 
@@ -15,6 +16,10 @@ namespace PdfNet.Core
         private Rectangle _rectangle;
         public Rectangle Rectangle => _rectangle;
         private readonly int _index;
+
+        public Vector2Int Size => new Vector2Int(Rectangle.Width, Rectangle.Height);
+        public int Top => Rectangle.Top;
+        public int Bottom => Rectangle.Bottom;
 
         public PdfPage(FpdfPageT page, int pageIndex)
         {
@@ -27,51 +32,23 @@ namespace PdfNet.Core
             _rectangle = new Rectangle(0, _startPositionY, width, height);
         }
 
-        private void CalculatePageSize(PdfViewport viewport)
-        {
-            _rectangle.Width = viewport.Size.X;
-            _rectangle.Height = (int)(_rectangle.Width * _aspectRatio);
-            _rectangle.Y = _index * _rectangle.Height;
-        }
-
         public void UpdatePageSize(PdfViewport viewport)
         {
-            CalculatePageSize(viewport);
+            var pivot = viewport.Center * viewport.Zoom - viewport.Center;
+            _rectangle.Width = (int)(viewport.Size.X * viewport.Zoom);
+            _rectangle.Height = (int)(_rectangle.Width * _aspectRatio);
+            _rectangle.X = -pivot.X;
+            _rectangle.Y = _index * _rectangle.Height - pivot.Y;
         }
 
-        public void Render(PdfViewport viewport)
+        public void Render(PdfViewport viewport, PdfTexture texture)
         {
-            var renderRectangle = Rectangle.Intersect(_rectangle, viewport.Rectangle);
-            var startPos = _rectangle.Y - viewport.Rectangle.Y;
-            var stride = renderRectangle.Width * PdfConstants.BytesPerPixel;
-            var firstLineOffset = Math.Max(startPos * stride, 0);
-            try
-            {
-                unsafe
-                {
-                    fixed (byte* pointer = viewport.Data)
-                    {
-                        IntPtr ptr = (IntPtr)pointer;
-                        var bufferHandle = fpdfview.FPDFBitmapCreateEx(renderRectangle.Width,
-                            renderRectangle.Height, (int)FPDFBitmapFormat.BGRA, ptr + firstLineOffset,
-                            stride);
-                        try
-                        {
-                            uint background = 0xFFFFFFFF;
-                            fpdfview.FPDFBitmapFillRect(bufferHandle, renderRectangle.X, 0, renderRectangle.Width, renderRectangle.Height, background);
-                            fpdfview.FPDF_RenderPageBitmap(bufferHandle, Page, -renderRectangle.X, startPos < 0 ? startPos : 0, _rectangle.Width, _rectangle.Height, 0, 0);
-                        }
-                        finally
-                        {
-                            fpdfview.FPDFBitmapDestroy(bufferHandle);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
+            UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page);
+        }
+
+        public void Dispose()
+        {
+            fpdfview.FPDF_ClosePage(Page);
         }
     }
 }
