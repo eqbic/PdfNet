@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+        <LangVersion>10</LangVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PDFiumCore" Version="120.0.6097" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+      <PackageReference Include="VL.Core" Version="2023.5.2" />
+      <PackageReference Include="VL.Core.Skia" Version="2023.5.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="PdfNet.Unsafe">
+        <HintPath>..\PdfNet.Unsafe\bin\Debug\net6.0\PdfNet.Unsafe.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

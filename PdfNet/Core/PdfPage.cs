@@ -34,16 +34,14 @@ namespace PdfNet.Core
 
         public void UpdatePageSize(PdfViewport viewport)
         {
-            var pivot = viewport.Center * viewport.Zoom - viewport.Center;
             _rectangle.Width = (int)(viewport.Size.X * viewport.Zoom);
             _rectangle.Height = (int)(_rectangle.Width * _aspectRatio);
-            _rectangle.X = -pivot.X;
-            _rectangle.Y = _index * _rectangle.Height - pivot.Y;
+            _rectangle.Y = _index * _rectangle.Height;
         }
 
         public void Render(PdfViewport viewport, PdfTexture texture)
         {
-            UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page);
+            UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page, viewport.Zoom);
         }
 
         public void Dispose()

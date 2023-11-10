@@ -5,7 +5,7 @@ namespace PdfNet.Core
 {
     public class PdfTexture : IDisposable
     {
-        protected IntPtr DataPointer;
+        public IntPtr DataPointer { get; private set; }
 
         private byte[] _data;
 

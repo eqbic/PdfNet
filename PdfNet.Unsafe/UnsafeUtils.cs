@@ -6,12 +6,18 @@ namespace PdfNet.Unsafe
 {
     public static class UnsafeUtils
     {
-        public static void RenderPage(byte[] data, Rectangle viewport, Rectangle pageRectangle, FpdfPageT page)
+        public static void RenderPage(byte[] data, Rectangle viewport, Rectangle pageRectangle, FpdfPageT page, float zoom)
         {
             var renderRectangle = Rectangle.Intersect(pageRectangle, viewport);
             var startPos = pageRectangle.Y - viewport.Y;
-            var stride = renderRectangle.Width * 4;
+            var stride = (int)(renderRectangle.Width * zoom * 4);
             var firstLineOffset = Math.Max(startPos * stride, 0);
+            int width = (int)(renderRectangle.Width * zoom);
+            int height = (int)(renderRectangle.Height * zoom);
+            int pageWidth = (int)(pageRectangle.Width * zoom);
+            int pageHeight = (int)(pageRectangle.Height * zoom);
+            int offsetX = (int)(-renderRectangle.X * zoom);
+            int offsetY = startPos < 0 ? (int)(startPos * zoom) : 0;
             try
             {
                 unsafe
@@ -19,12 +25,12 @@ namespace PdfNet.Unsafe
                     fixed (byte* pointer = data)
                     {
                         IntPtr ptr = (IntPtr)pointer;
-                        var bufferHandle = fpdfview.FPDFBitmapCreateEx(renderRectangle.Width, renderRectangle.Height, (int)FPDFBitmapFormat.BGRA, ptr + firstLineOffset, stride);
+                        var bufferHandle = fpdfview.FPDFBitmapCreateEx(width, height, (int)FPDFBitmapFormat.BGRA, ptr + firstLineOffset, stride);
                         try
                         {
                             uint background = 0xFFFFFFFF;
-                            fpdfview.FPDFBitmapFillRect(bufferHandle, 0, 0, renderRectangle.Width, renderRectangle.Height, background);
-                            fpdfview.FPDF_RenderPageBitmap(bufferHandle, page, pageRectangle.X, startPos < 0 ? startPos : 0, pageRectangle.Width, pageRectangle.Height, 0, 0);
+                            fpdfview.FPDFBitmapFillRect(bufferHandle, 0, 0, width, height, background);
+                            fpdfview.FPDF_RenderPageBitmap(bufferHandle, page, offsetX, offsetY, pageWidth, pageHeight, 0, 0);
                         }
                         finally
                         {

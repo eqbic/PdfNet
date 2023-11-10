@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using PDFiumCore;
 using PdfNet.Unsafe;
@@ -15,18 +16,18 @@ namespace PdfNet.Core
 
         public int PageCount { get; private set; }
 
-        public PdfDocument(string path, string password = "")
+        public PdfDocument(string path, PdfViewport viewport, string password = "")
         {
             PdfLibrary.EnsureLoaded();
             _document = fpdfview.FPDF_LoadDocument(path, password);
-            SetupDocument();
+            SetupDocument(viewport);
         }
 
-        public PdfDocument(byte[] data, string password = "")
+        public PdfDocument(byte[] data, PdfViewport viewport, string password = "")
         {
             PdfLibrary.EnsureLoaded();
             _document = LoadFromData(data, password);
-            SetupDocument();
+            SetupDocument(viewport);
         }
 
         private FpdfDocumentT LoadFromData(byte[] data, string password = "")
@@ -34,34 +35,35 @@ namespace PdfNet.Core
             return UnsafeUtils.LoadRaw(data, password);
         }
 
-        private void SetupDocument()
+        private void SetupDocument(PdfViewport viewport)
         {
             PageCount = fpdfview.FPDF_GetPageCount(_document);
             _pages = new Dictionary<int, PdfPage>();
             CachePages(_document);
+            UpdatePageSizes(viewport);
         }
 
         private List<PdfPage> GetPagesInViewport(PdfViewport viewport)
         {
-            return _pages.Values.Where(page => page.Bottom > viewport.Top || page.Top < viewport.Bottom).ToList();
+            return _pages.Values.Where(page => Rectangle.Intersect(viewport.Rectangle, page.Rectangle).Size != Size.Empty).ToList();
         }
 
         public void UpdatePageSizes(PdfViewport viewport)
         {
-            var visiblePages = GetPagesInViewport(viewport);
-            foreach (var page in visiblePages)
+            foreach (var page in _pages.Values)
             {
                 page.UpdatePageSize(viewport);
             }
         }
 
-        public void Render(PdfViewport viewport, PdfTexture texture)
+        public PdfTexture Render(PdfViewport viewport, PdfTexture texture)
         {
             var visiblePages = GetPagesInViewport(viewport);
             foreach (var page in visiblePages)
             {
                 page.Render(viewport, texture);
             }
+            return texture;
         }
 
         private void CachePages(FpdfDocumentT document)
