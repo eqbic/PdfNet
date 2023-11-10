@@ -45,7 +45,7 @@ namespace PdfNet.Core
 
         private List<PdfPage> GetPagesInViewport(PdfViewport viewport)
         {
-            return _pages.Values.Where(page => Rectangle.Intersect(viewport.Rectangle, page.Rectangle).Size != Size.Empty).ToList();
+            return _pages.Values.Where(page => RectangleF.Intersect(viewport.Rectangle, page.Rectangle).Size != Size.Empty).ToList();
         }
 
         public void UpdatePageSizes(PdfViewport viewport)

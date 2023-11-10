@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Numerics;
 using PDFiumCore;
 using PdfNet.Unsafe;
 
@@ -11,31 +12,29 @@ namespace PdfNet.Core
 
 
         private readonly float _aspectRatio;
-        private int _startPositionY;
+        private float _startPositionY;
 
-        private Rectangle _rectangle;
-        public Rectangle Rectangle => _rectangle;
+        private RectangleF _rectangle;
+        public RectangleF Rectangle => _rectangle;
         private readonly int _index;
 
-        public Vector2Int Size => new Vector2Int(Rectangle.Width, Rectangle.Height);
-        public int Top => Rectangle.Top;
-        public int Bottom => Rectangle.Bottom;
+        public Vector2 Size => new Vector2(Rectangle.Width, Rectangle.Height);
 
         public PdfPage(FpdfPageT page, int pageIndex)
         {
             Page = page;
             _index = pageIndex;
-            var width = (int)fpdfview.FPDF_GetPageWidthF(Page);
-            var height = (int)fpdfview.FPDF_GetPageHeightF(Page);
-            _aspectRatio = (float)height / width;
+            var width = fpdfview.FPDF_GetPageWidthF(Page);
+            var height = fpdfview.FPDF_GetPageHeightF(Page);
+            _aspectRatio = height / width;
             _startPositionY = pageIndex * height;
-            _rectangle = new Rectangle(0, _startPositionY, width, height);
+            _rectangle = new RectangleF(0, _startPositionY, width, height);
         }
 
         public void UpdatePageSize(PdfViewport viewport)
         {
-            _rectangle.Width = (int)(viewport.Size.X * viewport.Zoom);
-            _rectangle.Height = (int)(_rectangle.Width * _aspectRatio);
+            _rectangle.Width = viewport.Size.X * viewport.Zoom;
+            _rectangle.Height = _rectangle.Width * _aspectRatio;
             _rectangle.Y = _index * _rectangle.Height;
         }
 
