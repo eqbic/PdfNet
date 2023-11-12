@@ -76,7 +76,6 @@ namespace PdfNet.Core
             {
                 page.Render(viewport, texture);
             }
-            // _pages[0].Render(viewport, texture);
             return texture;
         }
 
