@@ -43,7 +43,24 @@ namespace PdfNet.Core
             _pages = new Dictionary<int, PdfPage>();
             CachePages(_document);
             UpdatePageSizes(viewport);
-            
+            UpdateDocumentSize();
+            viewport.DocumentHeight = DocumentSize.Y;
+        }
+
+        private void UpdateDocumentSize()
+        {
+            var documentHeight = 0f;
+            var documentWidth = 0f;
+            foreach (var page in _pages.Values)
+            {
+                documentHeight += page.Rectangle.Height;
+                if (page.Rectangle.Width > documentWidth)
+                {
+                    documentWidth = page.Rectangle.Width;
+                }
+                
+                DocumentSize = new Vector2(documentWidth, documentHeight);
+            }
         }
 
         private List<PdfPage> GetPagesInViewport(PdfViewport viewport)
@@ -53,20 +70,10 @@ namespace PdfNet.Core
 
         private void UpdatePageSizes(PdfViewport viewport)
         {
-            var documentHeight = 0f;
-            var documentWidth = 0f;
             foreach (var page in _pages.Values)
             {
                 page.UpdatePageSize(viewport);
-                documentHeight += page.Rectangle.Height;
-                if (page.Rectangle.Width > documentWidth)
-                {
-                    documentWidth = page.Rectangle.Width;
-                }
             }
-
-            DocumentSize = new Vector2(documentWidth, documentHeight);
-            viewport.DocumentHeight = documentHeight;
         }
 
         public PdfTexture Render(PdfViewport viewport, PdfTexture texture)
@@ -74,6 +81,7 @@ namespace PdfNet.Core
             var visiblePages = GetPagesInViewport(viewport);
             foreach (var page in visiblePages)
             {
+                page.UpdatePageSize(viewport);
                 page.Render(viewport, texture);
             }
             return texture;
