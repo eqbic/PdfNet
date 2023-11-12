@@ -15,7 +15,7 @@ namespace PdfNet.Core
         public void Translate(Vector2 deltaPosition)
         {
             var bounds = 0.5f * (_initialSize - _rectangle.Size());
-            float offsetY = 0.5f * (DocumentHeight - _rectangle.Size().Y);
+            float offsetY = DocumentHeight - _rectangle.Size().Y;
             Center = Vector2.Clamp(Center + deltaPosition, -bounds, bounds with { Y = offsetY });
             SetClampedPosition(_scaledOffset + Center);
         }
