@@ -6,25 +6,33 @@ namespace PdfNet.Core
 {
     public class PdfViewport
     {
-        /// <summary>
-        /// Position of the center of the rectangle.
-        /// </summary>
-        public Vector2 Position
-        {
-            get => new Vector2(_rectangle.X + _rectangle.Width * 0.5f, _rectangle.Y + _rectangle.Height * 0.5f);
-            set
-            {
-                                
-                _rectangle.X = value.X - 0.5f * _rectangle.Width;
-                _rectangle.Y = value.Y - 0.5f * _rectangle.Height;
-            }
-        }
+        public Vector2 Center { get; private set; }
+        private Vector2 _scaledOffset;
+        private RectangleF _rectangle;
+        private readonly Vector2 _initialSize;
+        public float DocumentHeight { get; set; }
 
         public void Translate(Vector2 deltaPosition)
         {
-            var x = Math.Clamp(Position.X + deltaPosition.X, 0.5f * _rectangle.Width, _initialSize.X - 0.5f * _rectangle.Width);
-            var y = Math.Max(Position.Y + deltaPosition.Y, 0.5f * _rectangle.Height);
-            Position = new Vector2(x, y);
+            var bounds = 0.5f * (_initialSize - _rectangle.Size());
+            float offsetY = 0.5f * (DocumentHeight - _rectangle.Size().Y);
+            Center = Vector2.Clamp(Center + deltaPosition, -bounds, bounds with { Y = offsetY });
+            SetClampedPosition(_scaledOffset + Center);
+        }
+
+        private void SetClampedPosition(Vector2 position)
+        {
+            _rectangle.X = Math.Clamp(position.X, 0f, _initialSize.X - _rectangle.Width);
+            _rectangle.Y = Math.Max(0f, position.Y);
+        }
+
+        public void Scale(float scaleFactor)
+        {
+            _rectangle.Width = _initialSize.X * scaleFactor;
+            _rectangle.Height = _initialSize.Y * scaleFactor;
+
+            _scaledOffset = 0.5f * new Vector2(_initialSize.X - _rectangle.Width, _initialSize.Y - _rectangle.Height);
+            SetClampedPosition(_scaledOffset + Center);
         }
         
         /// <summary>
@@ -39,25 +47,17 @@ namespace PdfNet.Core
             get => _zoom;
             set
             {
-                _zoom = Math.Clamp(value, 1f, float.MaxValue);
-                _rectangle.Width = (int)Math.Round(_initialSize.X / _zoom);
-                _rectangle.Height = (int)(_initialSize.X * _aspectRatio);
-                // var posX = (int)(0.5f * _initialSize.X - 0.5f * _rectangle.Width);
-                // var posY = (int)(0.5f * _initialSize.Y - 0.5f * _rectangle.Height);
-                // Position = new Vector2Int(posX, posY);
+                _zoom = Math.Max(value, 1f);
+                Scale(1f / _zoom);
             }
-}
+        }
 
-        private RectangleF _rectangle;
-        private readonly Vector2 _initialSize;
         public RectangleF Rectangle => _rectangle;
-        private float _aspectRatio;
         
         public PdfViewport(Vector2 size)
         {
             _rectangle = new RectangleF(0, 0, size.X, size.Y);
             _initialSize = size;
-            _aspectRatio = (float)size.Y / size.X;
             Zoom = 1f;
         }
 
