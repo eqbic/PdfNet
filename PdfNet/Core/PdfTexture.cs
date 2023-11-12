@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using PdfNet.Unsafe;
 
 namespace PdfNet.Core
@@ -19,19 +20,19 @@ namespace PdfNet.Core
             }
         }
 
-        private Vector2Int _resolution;
+        private Vector2 _resolution;
 
-        public Vector2Int Resolution
+        public Vector2 Resolution
         {
             get => _resolution;
             set
             {
                 _resolution = value;
-                Data = new byte[_resolution.X * _resolution.Y * PdfConstants.BytesPerPixel];
+                Data = new byte[(int)Math.Round(_resolution.X * _resolution.Y) * PdfConstants.BytesPerPixel];
             }
         }
 
-        public PdfTexture(Vector2Int resolution)
+        public PdfTexture(Vector2 resolution)
         {
             Resolution = resolution;
         }
