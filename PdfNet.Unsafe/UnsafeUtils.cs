@@ -9,7 +9,7 @@ namespace PdfNet.Unsafe
         public static void RenderPage(byte[] data, RectangleF viewport, RectangleF pageRectangle, FpdfPageT page, float zoom)
         {
             var renderRectangle = RectangleF.Intersect(pageRectangle, viewport);
-            var startPos = (int)Math.Round(pageRectangle.Y - viewport.Y);
+            var startPos = (int)Math.Round((pageRectangle.Y - viewport.Y) * zoom);
             var stride = (int)Math.Round(renderRectangle.Width * zoom * 4);
             var firstLineOffset = Math.Max(startPos * stride, 0);
             int width = (int)Math.Round(renderRectangle.Width * zoom);
@@ -17,7 +17,7 @@ namespace PdfNet.Unsafe
             int pageWidth = (int)Math.Round(pageRectangle.Width * zoom);
             int pageHeight = (int)Math.Round(pageRectangle.Height * zoom);
             int offsetX = (int)Math.Round(-renderRectangle.X * zoom);
-            int offsetY = startPos < 0 ? (int)Math.Round(startPos * zoom) : 0;
+            int offsetY = startPos < 0 ? startPos : 0;
             try
             {
                 unsafe
