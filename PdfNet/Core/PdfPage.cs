@@ -18,7 +18,7 @@ namespace PdfNet.Core
         public RectangleF Rectangle => _rectangle;
         private readonly int _index;
 
-        public Vector2 Size => new Vector2(Rectangle.Width, Rectangle.Height);
+        public Vector2 Size => Rectangle.Size();
 
         public PdfPage(FpdfPageT page, int pageIndex)
         {
@@ -41,6 +41,11 @@ namespace PdfNet.Core
         public void Render(PdfViewport viewport, PdfTexture texture)
         {
             UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page, viewport.Zoom);
+        }
+
+        public void Render(PdfTexture texture)
+        {
+            UnsafeUtils.RenderPage(texture.Data, _rectangle, _rectangle, Page, 1);
         }
 
         public void Dispose()
