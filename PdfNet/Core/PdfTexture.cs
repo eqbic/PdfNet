@@ -27,8 +27,10 @@ namespace PdfNet.Core
             get => _resolution;
             set
             {
-                _resolution = value;
-                Data = new byte[(int)Math.Round(_resolution.X * _resolution.Y) * PdfConstants.BytesPerPixel];
+                var width = MathF.Round(value.X);
+                var height = MathF.Round(value.Y);
+                _resolution = new Vector2(width, height);
+                Data = new byte[(int)width * (int)height * PdfConstants.BytesPerPixel];
             }
         }
 
