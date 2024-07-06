@@ -10,7 +10,7 @@ namespace PdfNet.Core
 {
     public class PdfDocument : IDisposable
     {
-        private FpdfDocumentT _document;
+        private readonly FpdfDocumentT _document;
         private Dictionary<int, PdfPage> _pages;
         private List<PdfPage> _visiblePages = new List<PdfPage>();
         public PdfPage GetPage(int pageNumber) => _pages[pageNumber];
