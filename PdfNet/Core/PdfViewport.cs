@@ -16,7 +16,7 @@ namespace PdfNet.Core
         {
             var bounds = 0.5f * (_initialSize - _rectangle.Size());
             float offsetY = DocumentHeight - _rectangle.Size().Y;
-            Center = Vector2.Clamp(Center + deltaPosition, -bounds, bounds with { Y = offsetY });
+            Center = Vector2.Clamp(Center + deltaPosition, -bounds, new Vector2(bounds.X, offsetY));
             SetClampedPosition(_scaledOffset + Center);
         }
 
