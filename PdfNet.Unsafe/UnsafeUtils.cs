@@ -6,17 +6,18 @@ namespace PdfNet.Unsafe
 {
     public static class UnsafeUtils
     {
-        public static void RenderPage(byte[] data, RectangleF viewport, RectangleF pageRectangle, FpdfPageT page, float zoom)
+        public static void RenderPage(byte[] data, RectangleF viewport, RectangleF pageRectangle, FpdfPageT page, float zoom, float renderScale)
         {
+            var scaleAmount = zoom * renderScale;
             var renderRectangle = RectangleF.Intersect(pageRectangle, viewport);
-            var startPos = (int)Math.Round((pageRectangle.Y - viewport.Y) * zoom);
-            var stride = (int)Math.Round(renderRectangle.Width * zoom) * 4;
+            var startPos = (int)Math.Round((pageRectangle.Y - viewport.Y) * scaleAmount);
+            var stride = (int)Math.Round(renderRectangle.Width * scaleAmount) * 4;
             var firstLineOffset = Math.Max(startPos * stride, 0);
-            int width = (int)Math.Round(renderRectangle.Width * zoom);
-            int height = (int)Math.Round(renderRectangle.Height * zoom);
-            int pageWidth = (int)Math.Round(pageRectangle.Width * zoom);
-            int pageHeight = (int)Math.Round(pageRectangle.Height * zoom);
-            int offsetX = (int)Math.Round(-renderRectangle.X * zoom);
+            int width = (int)Math.Round(renderRectangle.Width * scaleAmount);
+            int height = (int)Math.Round(renderRectangle.Height * scaleAmount);
+            int pageWidth = (int)Math.Round(pageRectangle.Width * scaleAmount);
+            int pageHeight = (int)Math.Round(pageRectangle.Height * scaleAmount);
+            int offsetX = (int)Math.Round(-renderRectangle.X * scaleAmount);
             int offsetY = startPos < 0 ? startPos : 0;
             try
             {

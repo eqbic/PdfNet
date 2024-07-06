@@ -14,6 +14,14 @@ namespace PdfNet.Core
         private Dictionary<int, PdfPage> _pages;
         private List<PdfPage> _visiblePages = new List<PdfPage>();
 
+        private float _renderScale = 1.0f;
+
+        public float RenderScale
+        {
+            get => _renderScale;
+            set => _renderScale = Math.Clamp(value, 0.0001f, 1f);
+        }
+
         public PdfPage GetPage(int pageNumber)
         {
             pageNumber = Math.Clamp(pageNumber, 0, PageCount - 1);
@@ -82,13 +90,18 @@ namespace PdfNet.Core
             }
         }
 
-        public PdfTexture Render(PdfViewport viewport, PdfTexture texture)
+        public PdfTexture Render(PdfViewport viewport, PdfTexture texture, float renderScale = 1.0f)
         {
+            if (renderScale != RenderScale)
+            {
+                RenderScale = renderScale;
+                texture.Resolution = texture.InitialResolution *  RenderScale;
+            }
             var visiblePages = GetPagesInViewport(viewport);
             foreach (var page in visiblePages)
             {
                 page.UpdatePageSize(viewport);
-                page.Render(viewport, texture);
+                page.Render(viewport, texture, RenderScale);
             }
             return texture;
         }

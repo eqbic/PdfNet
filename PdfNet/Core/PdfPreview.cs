@@ -25,7 +25,7 @@ namespace PdfNet.Core
             {
                 var page = _document.GetPage(i);
                 page.UpdatePageSize(_viewport);
-                page.Render(_viewport, _texture);
+                page.Render(_viewport, _texture, 1.0f);
             }
 
             return _texture;

@@ -20,6 +20,7 @@ namespace PdfNet.Core
             }
         }
 
+        public Vector2 InitialResolution { get; }
         private Vector2 _resolution;
 
         public Vector2 Resolution
@@ -36,6 +37,7 @@ namespace PdfNet.Core
 
         public PdfTexture(Vector2 resolution)
         {
+            InitialResolution = resolution;
             Resolution = resolution;
         }
 

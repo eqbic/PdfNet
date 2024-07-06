@@ -38,14 +38,14 @@ namespace PdfNet.Core
             _rectangle.Y = _index * _rectangle.Height;
         }
 
-        public void Render(PdfViewport viewport, PdfTexture texture)
+        public void Render(PdfViewport viewport, PdfTexture texture, float renderScale)
         {
-            UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page, viewport.Zoom);
+            UnsafeUtils.RenderPage(texture.Data, viewport.Rectangle, _rectangle, Page, viewport.Zoom, renderScale);
         }
 
         public void Render(PdfTexture texture)
         {
-            UnsafeUtils.RenderPage(texture.Data, _rectangle, _rectangle, Page, 1);
+            UnsafeUtils.RenderPage(texture.Data, _rectangle, _rectangle, Page, 1f, 1f);
         }
 
         public void Dispose()
