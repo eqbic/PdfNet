@@ -11,11 +11,6 @@
       <PackageReference Include="PDFiumCore" Version="128.0.6569" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-      <PackageReference Include="VL.Core" Version="2023.5.2" />
-      <PackageReference Include="VL.Core.Skia" Version="2023.5.2" />
-    </ItemGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\PdfNet.Unsafe\PdfNet.Unsafe.csproj" />
     </ItemGroup>
