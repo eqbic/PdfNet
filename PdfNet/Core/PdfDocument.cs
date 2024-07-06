@@ -13,7 +13,13 @@ namespace PdfNet.Core
         private readonly FpdfDocumentT _document;
         private Dictionary<int, PdfPage> _pages;
         private List<PdfPage> _visiblePages = new List<PdfPage>();
-        public PdfPage GetPage(int pageNumber) => _pages[pageNumber];
+
+        public PdfPage GetPage(int pageNumber)
+        {
+            pageNumber = Math.Clamp(pageNumber, 0, PageCount - 1);
+            return _pages[pageNumber];
+        }
+
         public Vector2 DocumentSize { get; private set; }
 
         public int PageCount { get; private set; }
