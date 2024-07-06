@@ -6,7 +6,19 @@ namespace PdfNet.Core
 {
     public class PdfViewport
     {
-        public Vector2 Center { get; private set; }
+        private Vector2 _center;
+
+        public Vector2 Center
+        {
+            get => _center;
+            set
+            {
+                var bounds = 0.5f * (_initialSize - _rectangle.Size());
+                float offsetY = DocumentHeight - _rectangle.Size().Y;
+                _center = Vector2.Clamp(value, -bounds, bounds with { Y = offsetY });
+                SetClampedPosition(_scaledOffset + Center);
+            }
+        }
         private Vector2 _scaledOffset;
         private RectangleF _rectangle;
         private readonly Vector2 _initialSize;
@@ -14,10 +26,7 @@ namespace PdfNet.Core
 
         public void Translate(Vector2 deltaPosition)
         {
-            var bounds = 0.5f * (_initialSize - _rectangle.Size());
-            float offsetY = DocumentHeight - _rectangle.Size().Y;
-            Center = Vector2.Clamp(Center + deltaPosition, -bounds, new Vector2(bounds.X, offsetY));
-            SetClampedPosition(_scaledOffset + Center);
+            Center += deltaPosition;
         }
 
         private void SetClampedPosition(Vector2 position)
