@@ -10,7 +10,7 @@ namespace PdfNet.Unsafe
         {
             var renderRectangle = RectangleF.Intersect(pageRectangle, viewport);
             var startPos = (int)Math.Round((pageRectangle.Y - viewport.Y) * zoom);
-            var stride = (int)Math.Round(renderRectangle.Width * zoom * 4);
+            var stride = (int)Math.Round(renderRectangle.Width * zoom) * 4;
             var firstLineOffset = Math.Max(startPos * stride, 0);
             int width = (int)Math.Round(renderRectangle.Width * zoom);
             int height = (int)Math.Round(renderRectangle.Height * zoom);
